@@ -1,40 +1,33 @@
-import React, { Component } from "react";
-import "./App.css";
-import Form from "./components/Form";
+import React, { Component } from 'react';
+import './App.css';
 
+import Form from "./components/Form";
 import Recipes from "./components/Recipes";
 
-const API_KEY = "999ff018bd3f5bb4b3eaa0e0313e327c";
+const API_KEY = "Your-api-key";
 
 class App extends Component {
   state = {
     recipes: []
-  };
-
-  componentDidUpdate = (prevProps, prevState) => {
-    const recipes = JSON.stringify(this.state.recipes);
-    localStorage.setItem("recipe", recipes);
-  };
-
+  }
+  getRecipe = async (e) => {
+    const recipeName = e.target.elements.recipeName.value;
+    e.preventDefault();
+    const api_call = await fetch(`https://cors-anywhere.herokuapp.com/http://food2fork.com/api/search?key=${API_KEY}&q=${recipeName}&count=10`);
+    
+    const data = await api_call.json();
+    this.setState({ recipes: data.recipes });
+    console.log(this.state.recipes);
+  }
   componentDidMount = () => {
     const json = localStorage.getItem("recipes");
     const recipes = JSON.parse(json);
     this.setState({ recipes });
-  };
-
-  getRecipe = async e => {
-    console.log("call");
-    const recipeName = e.target.elements.recipeName.value;
-    e.preventDefault();
-    const api_call = await fetch(
-      `https://www.food2fork.com/api/search?key=${API_KEY}&q=chicken%20breast&qcount=10`
-    );
-    // debugger;
-    const data = await api_call.json();
-    this.setState({ recipes: data.recipes });
-    console.log(data);
-  };
-
+  }
+  componentDidUpdate = () => {
+    const recipes = JSON.stringify(this.state.recipes);
+    localStorage.setItem("recipes", recipes);
+  }
   render() {
     return (
       <div className="App">
